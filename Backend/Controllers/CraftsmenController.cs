@@ -31,7 +31,7 @@ namespace Backend.Controllers
         [HttpGet("{id}")]
         public async Task<ActionResult<Craftsman>> GetCraftsman(long id)
         {
-            var craftsman = await _context.Craftsmen.FindAsync(id);
+            var craftsman = await _context.Craftsmen.Include(c => c.ToolBoxes).ThenInclude(box => box.Tools).FirstOrDefaultAsync(c => c.Id == id);
 
             if (craftsman == null)
             {

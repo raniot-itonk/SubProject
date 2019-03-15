@@ -1,7 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.ComponentModel.DataAnnotations.Schema;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Metadata.Internal;
 
 namespace Backend.DB
 {
@@ -31,6 +33,8 @@ namespace Backend.DB
     {
         public long Id { get; set; }
         public DateTime Purchased { get; set; }
+        [ForeignKey("Craftsman")]
+        public long CraftsmanId { get; set; }
         public Craftsman Craftsman { get; set; }
         public string Color { get; set; }
         public string Model { get; set; }
