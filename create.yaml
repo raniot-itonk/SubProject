@@ -15,9 +15,12 @@ spec:
         image: raniotitonk/subproject-backend
         resources:
           limits:
-            cpu: "1"
+            cpu: "0.5"
           requests:
-            cpu: "0.1"
+            cpu: "50m"
+        args:
+        - -cpus
+        - "1"
         ports:
         - containerPort: 80
         env:
@@ -35,4 +38,4 @@ spec:
     - protocol: TCP
       port: 80
       targetPort: 80
-  type: ClusterIP
+  type: LoadBalancer
