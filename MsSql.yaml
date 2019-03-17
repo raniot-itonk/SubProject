@@ -1,0 +1,57 @@
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: g6mssql-claim
+  labels:
+    app: g6mssql
+spec:
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 2Gi
+---
+apiVersion: apps/v1beta1
+kind: Deployment
+metadata:
+  name: g6mssql
+spec:
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app: g6mssql
+    spec:
+      terminationGracePeriodSeconds: 10
+      containers:
+      - name: g6mssql
+        image: mcr.microsoft.com/mssql/server:2017-latest
+        ports:
+        - containerPort: 1433
+        env:
+        - name: MSSQL_PID
+          value: "Developer"
+        - name: ACCEPT_EULA
+          value: "Y"
+        - name: MSSQL_SA_PASSWORD
+          value: "F19ItOnk"
+        volumeMounts:
+        - name: g6mssql
+          mountPath: /var/opt/mssql
+      volumes:
+      - name: g6mssql
+        persistentVolumeClaim:
+          claimName: g6mssql-claim
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: g6mssql
+spec:
+  selector:
+    app: g6mssql
+  ports:
+    - protocol: TCP
+      port: 1433
+      targetPort: 1433
+  type: LoadBalancer

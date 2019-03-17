@@ -41,20 +41,20 @@ namespace Backend
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
-        public void Configure(IApplicationBuilder app, IHostingEnvironment env)
+        public void Configure(IApplicationBuilder app, IHostingEnvironment env, CraftsmanContext context)
         {
             app.UseAuthentication();
             if (env.IsDevelopment())
             {
                 app.UseDeveloperExceptionPage();
+                context.Database.EnsureCreated();
             }
             else
             {
                 // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
                 app.UseHsts();
+                context.Database.Migrate();
             }
-
-            InitializeDatabase(app, env);
 
             // Enable middleware to serve generated Swagger as a JSON endpoint.
             app.UseSwagger();
@@ -73,17 +73,6 @@ namespace Backend
             });
         }
 
-        private static void InitializeDatabase(IApplicationBuilder app, IHostingEnvironment env)
-        {
-            using (var scope = app.ApplicationServices.GetService<IServiceScopeFactory>().CreateScope())
-            {
-                if(env.IsDevelopment())
-                    scope.ServiceProvider.GetRequiredService<CraftsmanContext>().Database.EnsureCreated();
-                else
-                    scope.ServiceProvider.GetRequiredService<CraftsmanContext>().Database.Migrate();
-
-            }
-        }
         private void SetupDatabase(IServiceCollection services, IHostingEnvironment env)
         {
             if(env.IsDevelopment())
